@@ -1,26 +1,50 @@
 import * as core from '@actions/core'
-import { wait } from './wait'
+import * as exec from '@actions/exec'
 
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 export async function run(): Promise<void> {
-  try {
-    const ms: string = core.getInput('milliseconds')
+    try {
+      const filePaths = core.getInput('file_paths', { required: true });
+      const baseUrl = core.getInput('base_url', { required: true });
 
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.debug(`Waiting ${ms} milliseconds ...`)
+      // Set environment variables
+      process.env.GITHUB_TOKEN = core.getInput('github_token', { required: true });
+      process.env.PERCY_TOKEN = core.getInput('percy_token', { required: true });
+      process.env.PUBLIC_BUILDER_API_KEY = core.getInput('public_builder_api_key', { required: true });
+      process.env.BASE_URL = baseUrl;
+      process.env.FILE_PATHS = filePaths;
 
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+      // Checkout
+      await exec.exec('git', ['checkout']);
 
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
-  } catch (error) {
-    // Fail the workflow run if an error occurs
-    if (error instanceof Error) core.setFailed(error.message)
-  }
+      // Install dependencies
+      await exec.exec('npm', ['install']);
+
+      // Install Playwright
+      await exec.exec('npx', ['playwright', 'install', '--with-deps', 'chromium']);
+
+      // Run baseline tests
+      await exec.exec('bash', ['-c', `
+        export PERCY_BRANCH=baseline-pages;
+        export PERCY_TARGET_BRANCH=baseline-pages;
+        export BASELINE=true;
+        npx percy exec --config ./percy.yml -- playwright test ${filePaths} | tee output.log
+      `]);
+
+      // Run E2E tests
+      await exec.exec('bash', ['-c', `
+        export PERCY_BRANCH=compare-pages;
+        export PERCY_TARGET_BRANCH=baseline-pages;
+        export BASELINE=false;
+        npx percy exec --config ./percy.yml -- playwright test ${filePaths} | tee output.log
+      `]);
+
+      // Additional steps can be adapted as needed
+    } catch (error) {
+      // Fail the workflow run if an error occurs
+      if (error instanceof Error) core.setFailed(error.message)
+    }
 }

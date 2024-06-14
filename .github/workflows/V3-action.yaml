@@ -1,0 +1,26 @@
+name: V2 - Builder.io - 1. Custom action
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */8 * * 1-5'
+
+jobs:
+  visual-comparison:
+    name: "Comparison from file: Builder.io"
+    runs-on: [orchestrator-runner]
+    container: 
+        image: node:20
+    environment: 'SQE'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Dependencies
+        run: npm install
+      - name: Visual Comparison
+        uses: ./
+        with:
+          file_paths: 'db-urls/qa-1.json'
+          base_url: 'https://example.com'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          percy_token: ${{ secrets.PERCY_TOKEN }}
+          public_builder_api_key: ${{ secrets.PUBLIC_BUILDER_API_KEY }}

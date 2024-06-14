@@ -1,0 +1,65 @@
+name: V2 - Builder.io - 4. Baseline comparison
+on:
+  workflow_dispatch:
+    inputs:
+      file_paths:
+        description: 'Urls to compare'
+        required: true
+        default: 'db-urls/qa-1.json'
+  schedule:
+    - cron: '0 */8 * * 1-5'
+
+jobs:
+  build:
+    name: "Comparison from file: Builder.io"
+    runs-on: [orchestrator-runner]
+    container: 
+      image: node:18
+    environment: 'SQE'
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+      PUBLIC_BUILDER_API_KEY: ${{ secrets.PUBLIC_BUILDER_API_KEY }}
+      BASE_URL: ${{ vars.BASE_URL }}
+      FILE_PATHS: ${{ github.event.inputs.file_paths || 'db-urls/qa-1.json' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install
+        run: npm install
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Run baseline tests
+        run: |
+          export PERCY_BRANCH=baseline-pages
+          export PERCY_TARGET_BRANCH=baseline-pages
+          export BASELINE=true
+          npx percy exec --config ./percy.yml -- playwright test visual-comparison-from-file | tee output.log
+
+      - name: Run E2E tests
+        run: |
+          export PERCY_BRANCH=compare-pages
+          export PERCY_TARGET_BRANCH=baseline-pages
+          export BASELINE=false
+          npx percy exec --config ./percy.yml -- playwright test visual-comparison-from-file | tee output.log
+      - name: Filter logs
+        if: success()
+        run: |
+          line=$(grep '^\[percy\] Finalized build #[^:]*:' output.log)
+          url=${line#*:}
+          build=${line#*/builds/}
+          echo "$url" >> $GITHUB_STEP_SUMMARY
+          echo "BUILD_ID=$build" >> $GITHUB_ENV
+      - name: obtain differences
+        if: success()
+        run: |
+          npm run obtain-differences | tee output.txt
+      - name: Notify differences
+        if: success()
+        run: |
+          total_snapshots=$(grep 'Total Snapshot:' output.txt)
+          echo "$total_snapshots" >> $GITHUB_STEP_SUMMARY
+#unreviewed_snapshots=$(grep 'Total Unreviewed:' output.txt)
+#echo "$unreviewed_snapshots" >> $GITHUB_STEP_SUMMARY
+

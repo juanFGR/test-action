@@ -1,0 +1,55 @@
+name: V2 - Builder.io - 1. History Landing pages
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */8 * * 1-5'
+
+jobs:
+  build:
+    name: "History Landing pages: Builder.io"
+    runs-on: [orchestrator-runner]
+    strategy:
+      matrix:
+        environment: ['PREPROD', 'PROD']
+    container: 
+      image: node:18
+    environment: ${{ matrix.environment }}
+    env:
+      BASELINE: 'false'
+      ENV: ${{ matrix.environment }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+      PUBLIC_BUILDER_API_KEY: ${{ secrets.PUBLIC_BUILDER_API_KEY }}
+      BASE_URL: ${{ vars.BASE_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install
+        run: npm install
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+      - name: Run E2E tests
+        run: |
+          export PERCY_BRANCH=${{ matrix.environment }}-history-builder-landing-pages
+          export PERCY_TARGET_BRANCH=${{ matrix.environment }}-history-builder-landing-pages
+          npx percy exec --config ./percy.yml -- playwright test landing-pages-builder | tee output.log
+      - name: Filter logs
+        if: success()
+        run: |
+          line=$(grep '^\[percy\] Finalized build #[^:]*:' output.log)
+          url=${line#*:}
+          build=${line#*/builds/}
+          echo "$url" >> $GITHUB_STEP_SUMMARY
+          echo "BUILD_ID=$build" >> $GITHUB_ENV
+      - name: obtain differences
+        if: success()
+        run: |
+          npm run obtain-differences | tee output.txt
+      - name: Notify differences
+        if: success()
+        run: |
+          total_snapshots=$(grep 'Total Snapshot:' output.txt)
+          echo "$total_snapshots" >> $GITHUB_STEP_SUMMARY
+#unreviewed_snapshots=$(grep 'Total Unreviewed:' output.txt)
+#echo "$unreviewed_snapshots" >> $GITHUB_STEP_SUMMARY
+
