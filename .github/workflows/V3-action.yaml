@@ -6,10 +6,10 @@ on:
 
 jobs:
   visual-comparison:
-    name: "Comparison from file: Builder.io"
+    name: 'Comparison from file: Builder.io'
     runs-on: [orchestrator-runner]
-    container: 
-        image: node:20
+    container:
+      image: node:20
     environment: 'SQE'
     steps:
       - name: Checkout

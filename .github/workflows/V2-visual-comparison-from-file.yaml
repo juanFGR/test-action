@@ -11,9 +11,9 @@ on:
 
 jobs:
   build:
-    name: "Comparison from file: Builder.io"
+    name: 'Comparison from file: Builder.io'
     runs-on: [orchestrator-runner]
-    container: 
+    container:
       image: node:18
     environment: 'SQE'
     env:
@@ -60,6 +60,7 @@ jobs:
         run: |
           total_snapshots=$(grep 'Total Snapshot:' output.txt)
           echo "$total_snapshots" >> $GITHUB_STEP_SUMMARY
+
 #unreviewed_snapshots=$(grep 'Total Unreviewed:' output.txt)
 #echo "$unreviewed_snapshots" >> $GITHUB_STEP_SUMMARY
 

@@ -6,12 +6,12 @@ on:
 
 jobs:
   build:
-    name: "History Landing pages: Builder.io"
+    name: 'History Landing pages: Builder.io'
     runs-on: [orchestrator-runner]
     strategy:
       matrix:
         environment: ['PREPROD', 'PROD']
-    container: 
+    container:
       image: node:18
     environment: ${{ matrix.environment }}
     env:
@@ -50,6 +50,7 @@ jobs:
         run: |
           total_snapshots=$(grep 'Total Snapshot:' output.txt)
           echo "$total_snapshots" >> $GITHUB_STEP_SUMMARY
+
 #unreviewed_snapshots=$(grep 'Total Unreviewed:' output.txt)
 #echo "$unreviewed_snapshots" >> $GITHUB_STEP_SUMMARY
 
