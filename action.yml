@@ -9,15 +9,22 @@ branding:
 
 # Define your inputs here.
 inputs:
-  milliseconds:
-    description: 'Your input description here'
+  file_paths:
+    description: 'Urls to compare'
     required: true
-    default: '1000'
-
-# Define your outputs here.
-outputs:
-  time:
-    description: 'Your output description here'
+    default: 'db-urls/qa-1.json'
+  base_url:
+    description: 'Base URL for comparison'
+    required: true
+  github_token:
+    description: 'Git Token'
+    required: true
+  percy_token:
+    description: 'Percy Token'
+    required: true
+  public_builder_api_key:
+    description: 'Builder API'
+    required: true
 
 runs:
   using: node20

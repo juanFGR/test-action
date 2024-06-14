@@ -60,9 +60,9 @@ jobs:
         with:
           file_paths: 'db-urls/qa-1.json'
           base_url: 'https://example.com'
-          github_token: 'TEST_GITHUB'
-          percy_token: 'TEST_PERCY_TOKEN'
-          public_builder_api_key: 'TEST_PUBLIC_BUILDER_API_KEY'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          percy_token: ${{ secrets.PERCY_TOKEN }}
+          public_builder_api_key: 'TEST'
 
       - name: Print Output
         id: output
