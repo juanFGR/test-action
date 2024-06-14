@@ -26210,7 +26210,7 @@ async function run() {
         export PERCY_BRANCH=baseline-pages;
         export PERCY_TARGET_BRANCH=baseline-pages;
         export BASELINE=true;
-        npx percy exec --config ./percy.yml -- playwright test vi | tee output.log
+        npx percy exec --config ./percy.yml -- playwright test visual-comparison-from-file | tee output.log
       `
         ]);
         // Run E2E tests
@@ -26220,7 +26220,7 @@ async function run() {
         export PERCY_BRANCH=compare-pages;
         export PERCY_TARGET_BRANCH=baseline-pages;
         export BASELINE=false;
-        npx percy exec --config ./percy.yml -- playwright test ${filePaths} | tee output.log
+        npx percy exec --config ./percy.yml -- playwright test visual-comparison-from-file | tee output.log
       `
         ]);
         // Additional steps can be adapted as needed
