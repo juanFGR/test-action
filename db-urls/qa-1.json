@@ -1,0 +1,21 @@
+{
+  "owner": "QA-1",
+  "branch": "QA-1",
+  "urls": [
+    {
+      "id": "landing-page-I",
+      "old": "https://www.se.com/uk/en/work/solutions/for-business/food-and-beverage/",
+      "new": "https://se-web-platform-enterprise.vercel.app/uk/en/work/solutions/for-business/food-and-beverage/"
+    },
+    {
+      "id": "landing-page-II",
+      "old": "https://www.se.com/fr/fr/work/solutions/for-business/real-estate/",
+      "new": "https://se-web-platform-enterprise.vercel.app/fr/fr/work/solutions/for-business/real-estate/"
+    },
+    {
+      "id": "landing-page-III",
+      "old": "https://www.se.com/de/de/work/solutions/machine-builder/",
+      "new": "https://se-web-platform-enterprise.vercel.app/de/de/work/solutions/machine-builder/"
+    }
+  ]
+}
