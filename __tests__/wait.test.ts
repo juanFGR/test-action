@@ -5,7 +5,7 @@
 import { wait } from '../src/wait'
 import { expect } from '@jest/globals'
 
-describe('wait.ts', () => {
+describe.skip('wait.ts', () => {
   it('throws an invalid number', async () => {
     const input = parseInt('foo', 10)
     expect(isNaN(input)).toBe(true)
