@@ -53,7 +53,6 @@ async function getModelPageUrls(
   modelName: string,
   request: APIRequestContext
 ): Promise<string[]> {
-  // eslint-disable-next-line turbo/no-undeclared-env-vars
   const apiKey = process.env.PUBLIC_BUILDER_API_KEY
 
   const response = await request.get(
@@ -61,13 +60,11 @@ async function getModelPageUrls(
   )
 
   const { results } = await response.json()
-  const urls: string[] = results.map(
-    (item: { previewUrl: string }) =>
-      '/' + item.previewUrl.split('/').slice(3).join('/')
+  const urls: string[] = results.map((item: { previewUrl: string }) =>
+    '/'.concat(item.previewUrl.split('/').slice(3).join('/'))
   )
 
   const updatedUrls = urls.map(url => {
-    // eslint-disable-next-line turbo/no-undeclared-env-vars
     if (
       url.includes('schneider-in-america') &&
       process.env.ENV_POINT === 'PROD'

@@ -58,7 +58,11 @@ jobs:
         id: test-action
         uses: ./
         with:
-          milliseconds: 2000
+          file_paths: 'db-urls/qa-1.json'
+          base_url: 'https://example.com'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          percy_token: ${{ secrets.PERCY_TOKEN }}
+          public_builder_api_key: 'TEST'
 
       - name: Print Output
         id: output

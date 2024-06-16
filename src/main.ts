@@ -36,7 +36,7 @@ export async function run(): Promise<void> {
         export PERCY_BRANCH=baseline-pages;
         export PERCY_TARGET_BRANCH=baseline-pages;
         export BASELINE=true;
-        npx percy exec --config ./percy.yml -- playwright test ${filePaths} | tee output.log
+        npx percy exec --config ./percy.yml -- playwright test visual-comparison-from-file | tee output.log
       `
     ])
 
@@ -47,7 +47,7 @@ export async function run(): Promise<void> {
         export PERCY_BRANCH=compare-pages;
         export PERCY_TARGET_BRANCH=baseline-pages;
         export BASELINE=false;
-        npx percy exec --config ./percy.yml -- playwright test ${filePaths} | tee output.log
+        npx percy exec --config ./percy.yml -- playwright test visual-comparison-from-file | tee output.log
       `
     ])
 

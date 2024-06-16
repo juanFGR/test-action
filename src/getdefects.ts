@@ -2,7 +2,8 @@
 import axios from 'axios'
 
 // Define an async function to make the request
-async function fetchBuildDetails() {
+
+async function fetchBuildDetails(): Promise<void> {
   const buildId = process.env.BUILD_ID // Replace this with your actual build ID
   const percyToken = process.env.PERCY_TOKEN // Replace this with your actual Percy token
 
