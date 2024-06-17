@@ -24,7 +24,7 @@ jobs:
       BASE_SDL: ${{ vars.BASE_SDL }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install
         run: npm install
       - name: Install Playwright
